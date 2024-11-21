@@ -21,7 +21,7 @@ describe('login flow', () => {
         await signOut(auth);
 
         const rendered = render(
-            <MemoryRouter initialEntries={['/login']}>
+            <MemoryRouter initialEntries={['/login']} future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
                 <CurrentLocation />
                 <Login />
             </MemoryRouter>

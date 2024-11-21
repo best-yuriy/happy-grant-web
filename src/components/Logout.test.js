@@ -22,7 +22,7 @@ describe('logout flow', () => {
         expect(auth.currentUser).not.toBeNull();
 
         const rendered = render(
-            <MemoryRouter initialEntries={['/logout']}>
+            <MemoryRouter initialEntries={['/logout']} future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
                 <CurrentLocation />
                 <Logout />
             </MemoryRouter>

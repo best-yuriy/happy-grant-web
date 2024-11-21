@@ -16,7 +16,7 @@ describe('signup flow', () => {
         const testEmail = `signup-test-${testId}@example.com`;
 
         const rendered = render(
-            <MemoryRouter initialEntries={['/signup']}>
+            <MemoryRouter initialEntries={['/signup']} future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
                 <CurrentLocation />
                 <Signup />
             </MemoryRouter>
