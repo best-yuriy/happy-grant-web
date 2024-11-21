@@ -1,0 +1,22 @@
+#happiness-stats {
+    padding: 0 1em;
+}
+
+.stats-mode-selector {
+    padding: 1em 0;
+}
+
+.stats-mode-choice {
+    margin: 0 1em;
+    height: 3em;
+    width: 3em;
+    text-align: center;
+    border: solid thin lightgrey;
+    border-radius: 10%;
+    color: grey;
+}
+
+.stats-mode-choice:hover {
+    background-color: lightblue;
+    border-color: grey;
+}

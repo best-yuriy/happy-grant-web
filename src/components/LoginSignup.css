@@ -1,0 +1,40 @@
+.login-main,
+.signup-main {
+    justify-content: space-around;
+}
+
+.login-form label,
+.signup-form label {
+    display: none;
+}
+
+.login-form input.email,
+.login-form input.password,
+.login-form button.login-button,
+.signup-form input.email,
+.signup-form input.password,
+.signup-form button.signup-button
+{
+    max-width: 80%;
+    min-width: 5em;
+    padding: 0.5em;
+    margin: 1em;
+    font-size: 2em;
+    border-radius: 0.5em;
+    border-color: darkgrey;
+    border-style: solid;
+}
+
+.login-form button.login-button,
+.signup-form button.signup-button {
+    font-weight: bold;
+    background-color: lightblue;
+    border: none;
+}
+
+.login-form input.email:focus,
+.login-form input.password:focus,
+.signup-form input.email:focus,
+.signup-form input.password:focus {
+    outline: none;
+}

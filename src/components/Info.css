@@ -1,0 +1,24 @@
+#info {
+    padding: 1rem 1rem 0 1rem;
+}
+
+#info section {
+    padding-bottom: 1rem;
+}
+
+#info section h1 {
+    font-size: 2em;
+    margin-block-start: 0;
+    margin-block-end: 1rem;
+    text-align: left;
+    color: lightgrey;
+}
+
+#info section p {
+    margin-block-start: 0;
+    margin-block-end: 1rem;
+    font-size: 1.5em;
+    text-align: justify;
+    color: #6b93a1;
+    font-weight: bold;
+}

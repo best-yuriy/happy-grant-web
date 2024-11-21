@@ -1,0 +1,86 @@
+#day-happiness-prompt .header {
+  font-size: 2em;
+  padding: 1em;
+  border-bottom: thin solid lightgrey;
+  color: darkgrey;
+  font-weight: bold;
+}
+
+.mood-prompt-controls .mood-slider {
+  margin: 2em 2em;
+}
+
+.mood-prompt-controls .mood-slider .slider-track {
+  height: 0.5em;
+  width: 100%;
+  background-color: darkgrey;
+  border-radius: 0.5em;
+}
+
+.mood-prompt-controls .mood-slider .slider-thumb {
+  height: 3em;
+  width: 3em;
+  background-color: lightblue;
+  border: thin solid darkgrey;
+  border-radius: 30%;
+}
+
+.mood-prompt-controls .mood-slider .slider-thumb:focus {
+  outline: none;
+}
+
+.mood-prompt-controls .mood-slider .slider-thumb .slider-thumb-label {
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  font-weight: bold;
+  color: black;
+}
+
+.mood-prompt-controls .flex-column-main {
+  align-content: center;
+}
+
+.mood-prompt-controls .mood-level-image {
+  max-width: 80%;
+  max-height: 80%;
+  margin: auto;
+}
+
+.mood-prompt-controls .buttons {
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.mood-prompt-controls .buttons .button {
+  width: 3em;
+  height: 3em;
+  padding: 1em;
+  margin: 2em 0.5em;
+  background-color: lightgrey;
+  border-radius: 10%;
+}
+
+.mood-prompt-controls .buttons .button.primary {
+  background-color: lightblue;
+  width: 5em;
+  height: 5em;
+}
+
+.mood-prompt-controls .buttons .button.primary.locked {
+  background-color: rgb(192, 225, 192);
+}
+
+.mood-prompt-controls .buttons .button img {
+  width: 3em;
+  height: 3em;
+}
+
+.mood-prompt-controls .buttons .button.primary img {
+  width: 5em;
+  height: 5em;
+}
+
+.mood-prompt-controls .buttons .button:hover img {
+  filter: invert(42%);
+}

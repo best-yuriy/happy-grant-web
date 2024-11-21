@@ -1,0 +1,29 @@
+.App {
+  max-width: 600px;
+  margin: auto;
+  text-align: center;
+}
+
+.App nav {
+  padding: 1em 1em;
+  border-bottom: thin solid lightgrey;
+}
+
+.nav-item {
+  display: inline-block;
+  padding: 1em;
+  text-decoration: none;
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: lightblue;
+  border-radius: 10%;
+}
+
+.nav-item:hover img {
+  filter: invert(42%);
+}
+
+.App #footer {
+  background-color: royalblue;
+}
