@@ -3,9 +3,10 @@ import { NavLink, Route, Routes } from 'react-router-dom';
 import AppRoute from './components/AppRoute';
 import DayHappinessPrompt from './components/DayHappinessPrompt';
 import HappinessStats from './components/HappinessStats';
-import NavHome from './assets/nav-home.svg'
-import NavStats from './assets/nav-stats.svg'
-import NavInfo from './assets/nav-info.svg'
+import NavHome from './assets/nav-home.svg';
+import NavStats from './assets/nav-stats.svg';
+import NavInfo from './assets/nav-info.svg';
+import AccountNavLink from './components/AccountNavLink'
 import Info from './components/Info';
 import Signup from './components/Signup';
 import Login from './components/Login';
@@ -25,6 +26,7 @@ function App() {
         <NavLink to="/" className="nav-item"><img src={NavHome} alt='home'/></NavLink>
         <NavLink to="/stats" className="nav-item"><img src={NavStats} alt='stats'/></NavLink>
         <NavLink to="/info" className="nav-item"><img src={NavInfo} alt='info'/></NavLink>
+        <AccountNavLink />
       </nav>
       <div className="flex-column-main">
         <ErrorBanner message={errorMessage} onClose={resetError}/>

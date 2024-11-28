@@ -15,6 +15,10 @@
   text-decoration: none;
 }
 
+.nav-item.logout-login {
+  margin-left: auto;
+}
+
 .nav-item:hover, .nav-item.active {
   background-color: lightblue;
   border-radius: 10%;
