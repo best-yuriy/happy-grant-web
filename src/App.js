@@ -31,11 +31,15 @@ function App() {
       <div className="flex-column-main">
         <ErrorBanner message={errorMessage} onClose={resetError}/>
         <Routes>
-          <Route path="/info" element={<Info />} />
-          <Route path="/signup" element={<Signup onError={setError}/>} />
-          <Route path="/login" element={<Login onError={setError}/>} />
-          <Route path="/logout" element={<Logout />} />
           <Route element={<AppRoute />}>
+            <Route path="/info" element={<Info />}/>
+          </Route>
+          <Route element={<AppRoute infoRequired={true}/>}>
+            <Route path="/signup" element={<Signup onError={setError}/>} />
+            <Route path="/login" element={<Login onError={setError}/>} />
+            <Route path="/logout" element={<Logout />} />
+          </Route>
+          <Route element={<AppRoute infoRequired={true} authRequired={true}/>}>
             <Route path="/" element={<DayHappinessPrompt />} />
             <Route path="/stats" element={<HappinessStats />} />
           </Route>
