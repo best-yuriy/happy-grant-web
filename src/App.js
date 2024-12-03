@@ -1,6 +1,5 @@
 import './App.css';
 import { NavLink, Route, Routes } from 'react-router-dom';
-import AppRoute from './components/AppRoute';
 import DayHappinessPrompt from './components/DayHappinessPrompt';
 import HappinessStats from './components/HappinessStats';
 import NavHome from './assets/nav-home.svg';
@@ -13,6 +12,7 @@ import Login from './components/Login';
 import Logout from './components/Logout';
 import { useState } from 'react';
 import ErrorBanner from './components/ErrorBanner';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -31,18 +31,20 @@ function App() {
       <div className="flex-column-main">
         <ErrorBanner message={errorMessage} onClose={resetError}/>
         <Routes>
-          <Route element={<AppRoute />}>
-            <Route path="/info" element={<Info />}/>
-          </Route>
-          <Route element={<AppRoute infoRequired={true}/>}>
-            <Route path="/signup" element={<Signup onError={setError}/>} />
-            <Route path="/login" element={<Login onError={setError}/>} />
-            <Route path="/logout" element={<Logout />} />
-          </Route>
-          <Route element={<AppRoute infoRequired={true} authRequired={true}/>}>
-            <Route path="/" element={<DayHappinessPrompt />} />
-            <Route path="/stats" element={<HappinessStats />} />
-          </Route>
+          <Route path="/info" element={<Info />}/>
+          <Route path="/signup" element={<Signup onError={setError}/>} />
+          <Route path="/login" element={<Login onError={setError}/>} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/" element={
+            <PrivateRoute>
+              <DayHappinessPrompt/>
+            </PrivateRoute>
+          }/>
+          <Route path="/stats" element={
+            <PrivateRoute>
+              <HappinessStats/>
+            </PrivateRoute>
+          }/>
         </Routes>
       </div>
     </div>

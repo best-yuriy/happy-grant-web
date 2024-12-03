@@ -2,10 +2,11 @@ import './LoginSignup.css'
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 function Login({ onError }) {
 
+    const location = useLocation();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,7 +15,9 @@ function Login({ onError }) {
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
             .then(() => {
-                navigate("/");
+                const from = 
+                    location.state && location.state.from ? location.state?.from?.pathname : '/';
+                navigate(from, { replace: true });
             })
             .catch((error) => {
                 switch (error.code) {
