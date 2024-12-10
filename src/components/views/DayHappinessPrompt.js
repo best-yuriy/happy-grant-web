@@ -84,7 +84,7 @@ function DayHappinessPrompt({ onError }) {
     }
 
     async function saveHappinessLevel() {
-        if (state.value !== state.savedValue) {
+        if (state.status === 'UNSAVED') {
             setState({ ...state, status: 'SAVING' });
             try {
                 await setHappinessLevel(state.date, state.value);
