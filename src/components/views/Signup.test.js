@@ -4,8 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 import Signup from './Signup';
-import CurrentLocation from './CurrentLocation';
-import { auth } from '../firebase';
+import CurrentLocation from '../test-utils/CurrentLocation';
+import { auth } from '../../firebase';
 
 describe('signup flow', () => {
     let testId = null;

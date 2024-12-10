@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { getData } from "../services/LocalStorageService";
-import { LastInfoDate, LastSeenInfoDateStorageKey } from "./Info";
+import { LastInfoDate, LastSeenInfoDateStorageKey } from "./views/Info";
 import { auth } from "../firebase";
 
 /**

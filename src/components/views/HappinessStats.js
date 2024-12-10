@@ -10,9 +10,9 @@ import {
 } from 'chart.js'
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday'
-import { setHappinessLevel, getHappinessLevel } from '../services/HappinessLevelRepo'
+import { setHappinessLevel, getHappinessLevel } from '../../services/HappinessLevelRepo'
 import { useState } from 'react';
-import { getStatsDaily, getStatsWeekly } from '../services/HappinessStatService';
+import { getStatsDaily, getStatsWeekly } from '../../services/HappinessStatService';
 
 dayjs.extend(weekday);
 

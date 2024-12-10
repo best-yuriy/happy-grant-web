@@ -1,31 +1,34 @@
 import './LoginSignup.css'
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
-function Signup({ onError }) {
-    
+function Login({ onError }) {
+
+    const location = useLocation();
     const navigate = useNavigate();
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const onSubmit = async (e) => {
+    const onLogin = async (e) => {
         e.preventDefault();
-        createUserWithEmailAndPassword(auth, email, password)
+        signInWithEmailAndPassword(auth, email, password)
             .then(() => {
-                navigate("/");
+                const from = 
+                    location.state && location.state.from ? location.state?.from?.pathname : '/';
+                navigate(from, { replace: true });
             })
             .catch((error) => {
                 switch (error.code) {
-                    case 'auth/missing-password': // TODO: display error message
-                    case 'auth/weak-password': // TODO: display error message
-                    case 'auth/missing-email':
                     case 'auth/invalid-email':
-                    case 'auth/email-already-in-use': // TODO: display error message
-                        onError('Invalid email or password.')
+                    case 'auth/user-not-found':
+                    case 'auth/missing-password':
+                    case 'auth/wrong-password':
+                    case 'auth/invalid-credential':
+                        onError("Invalid email or password.");
                         break;
-                    default:
+                default:
                         console.log(
                             'unexpected auth error',
                             error.code,
@@ -38,15 +41,15 @@ function Signup({ onError }) {
     }
 
     return (
-        <div className='signup-main flex-column'>
-            <form className='signup-form'>
+        <div className='login-main flex-column'>            
+            <form className='login-form'>    
 
-                <label htmlFor="email-input">email</label>
+                <label htmlFor="email-input">email</label>                                          
                 <input
                     id="email-input"
                     className="email"
                     type="email"
-                    value={email}
+                    value={email}                                   
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="Email address"
@@ -61,23 +64,22 @@ function Signup({ onError }) {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="Password"
-                />                                          
+                />
 
                 <button
-                    name="signup"
-                    className='signup-button'
-                    onClick={onSubmit}
-                >  
-                    SIGN UP
+                    className="login-button"
+                    onClick={onLogin}
+                >
+                    SIGN IN
                 </button>
             </form>
 
             <p>
-                Already have an account?{' '}
-                <NavLink to="/login" >Sign in</NavLink>
-            </p>  
+                Need an account?{' '}
+                <NavLink to="/signup">Sign up</NavLink>
+            </p>
         </div>
     );
 }
 
-export default Signup;
+export default Login;

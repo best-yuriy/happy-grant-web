@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Logout from './Logout';
 
-import CurrentLocation from './CurrentLocation';
-import { auth } from '../firebase';
+import CurrentLocation from '../test-utils/CurrentLocation';
+import { auth } from '../../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 describe('logout flow', () => {

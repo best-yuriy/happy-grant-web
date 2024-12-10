@@ -4,8 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 import Login from './Login';
-import CurrentLocation from './CurrentLocation';
-import { auth } from '../firebase';
+import CurrentLocation from '../test-utils/CurrentLocation';
+import { auth } from '../../firebase';
 import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
 describe('login flow', () => {
