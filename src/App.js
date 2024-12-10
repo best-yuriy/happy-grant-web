@@ -37,7 +37,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/" element={
             <PrivateRoute>
-              <DayHappinessPrompt/>
+              <DayHappinessPrompt onError={setError}/>
             </PrivateRoute>
           }/>
           <Route path="/stats" element={

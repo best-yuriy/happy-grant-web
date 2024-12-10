@@ -2,6 +2,7 @@ import './DayHappinessPrompt.css'
 import chevronBackward from '../../assets/chevron-backward.svg'
 import chevronForward from '../../assets/chevron-forward.svg'
 import checkCircle from '../../assets/check-circle.svg'
+import pendingCircle from '../../assets/pending-circle.svg'
 import ecstatic from '../../assets/ecstatic.png'
 import happy from '../../assets/happy.png'
 import thoughtful from '../../assets/thoughtful.png'
@@ -55,13 +56,18 @@ function moodImageFrom(moodValue) {
     return ecstatic;
 }
 
-function DayHappinessPrompt() {
+function DayHappinessPrompt({ onError }) {
 
     const today = () => dayjs().startOf('day');
 
     function initState(date) {
         const existingValue = getHappinessLevel(date);
-        return { date, value: existingValue || 80, savedValue: existingValue };
+        return {
+            date,
+            value: existingValue || 80,
+            savedValue: existingValue,
+            status: existingValue ? 'SAVED' : 'UNSAVED'
+        };
     }
 
     const [state, setState] = useState(initState(today()));
@@ -74,13 +80,22 @@ function DayHappinessPrompt() {
     }
 
     function setHappinessLevelState(value) {
-        setState({ ...state, value });
+        setState({ ...state, value, status: value == state.savedValue ? 'SAVED' : 'UNSAVED' });
     }
 
-    function saveHappinessLevel() {
+    async function saveHappinessLevel() {
         if (state.value !== state.savedValue) {
-            setHappinessLevel(state.date, state.value);
-            setState({ ...state, savedValue: state.value });
+            setState({ ...state, status: 'SAVING' });
+            try {
+                await setHappinessLevel(state.date, state.value);
+                setState({ ...state, savedValue: state.value, status: 'SAVED' });
+            } catch (error) {
+                setState({ ...state, status: 'UNSAVED' });
+                onError('There was a problem saving your happiness stats.');
+                console.log('There was a problem saving your happiness stats:', error);
+            }
+            
+            
         }
     }
 
@@ -115,9 +130,9 @@ function DayHappinessPrompt() {
                         </div>
                         <div
                             className={`button primary${state.value === state.savedValue ? ' locked' : ''}`}
-                            onClick={() => saveHappinessLevel()}
+                            onClick={async () => await saveHappinessLevel()}
                         >
-                            <img src={checkCircle} alt='save'/>
+                            <img src={state.status === 'SAVING' ? pendingCircle : checkCircle} alt='save'/>
                         </div>
                         <div className='button' onClick={() => changeDays(1)}>
                             <img src={chevronForward} alt='forward'/>
