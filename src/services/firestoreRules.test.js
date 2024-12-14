@@ -1,7 +1,6 @@
 import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
 import { setDoc, getDoc } from 'firebase/firestore';
 import fs from 'fs';
-import { setImmediate } from 'timers';
 
 describe('Firestore security rules', () => {
     let testEnv;
@@ -43,5 +42,21 @@ describe('Firestore security rules', () => {
 
         // Try to read the document as 'alice'
         await assertFails(getDoc(docRefAlice));
+    });
+
+    it('should deny a user to read and write other collections', async () => {
+        const adminDocPath = 'unknown-collection/admin';
+        const aliceDocPath = 'unknown-collection/alice';
+
+        await testEnv.withSecurityRulesDisabled(async (admin) => {
+            const adminDocRef = admin.firestore().doc(adminDocPath);
+            await setDoc(adminDocRef, { name: 'Admin' });
+        });
+        
+        const alice = testEnv.authenticatedContext('alice');
+        const aliceDb = alice.firestore();
+
+        await assertFails(getDoc(aliceDb.doc(adminDocPath)));
+        await assertFails(setDoc(aliceDb.doc(aliceDocPath), { name: 'Alice' }));
     });
 });
