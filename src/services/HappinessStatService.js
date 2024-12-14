@@ -1,4 +1,5 @@
 import { getData, putData } from "./LocalStorageService";
+import { putData as firestorePutData } from "./FirestoreStorageService"
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 
@@ -9,7 +10,8 @@ function _getHappinessStats() {
     return stats;
 }
 
-function _putHappinessStats(stats) {
+async function _putHappinessStats(stats) {
+    await firestorePutData({ 'happiness-stats': stats });
     putData({ 'happiness-stats': stats });
 }
 
@@ -34,7 +36,7 @@ function getStat(date) {
     return stat['value'];
 }
 
-function setStat(date, value) {
+async function setStat(date, value) {
     date = _toCalendarDayString(date);
 
     const stats = _getHappinessStats();
@@ -42,18 +44,18 @@ function setStat(date, value) {
 
     if (index === -1) {
         stats.push({ date, value });
-        _putHappinessStats(stats);
+        await _putHappinessStats(stats);
     }
     else if (stats[index]['date'] === date) {
         stats[index]['value'] = value;
-        _putHappinessStats(stats);
+        await _putHappinessStats(stats);
     }
     else {
         const newStats = 
             stats.slice(0, index)
                 .concat([{ date, value }])
                 .concat(stats.slice(index));
-        _putHappinessStats(newStats);
+        await _putHappinessStats(newStats);
     }
 }
 

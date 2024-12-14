@@ -1,10 +1,14 @@
 const dayjs = require('dayjs');
 const weekday = require("dayjs/plugin/weekday");
-const { getStat, setStat, getStatsDaily, getStatsWeekly } = require('./HappinessStatService')
+const { getStat, setStat, getStatsDaily, getStatsWeekly } = require('./HappinessStatService');
+const { auth } = require('../firebase');
+const { signInWithEmailAndPassword } = require('firebase/auth');
 
 dayjs.extend(weekday);
 
 describe('HappinessStatsService', () => {
+
+    beforeAll(async () => await signInWithEmailAndPassword(auth, 'bob@ex.com', 'foobar'));
 
     beforeEach(() => localStorage.clear());
 
@@ -17,19 +21,19 @@ describe('HappinessStatsService', () => {
 
     it('should return null for a stat that has not been set before', () => {
         expect(getStat(day1)).toBeNull;
-    })
+    });
 
-    it('should get and set a single stat', () => {
-        setStat(day1, 75);
+    it('should get and set a single stat', async () => {
+        await setStat(day1, 75);
         expect(getStat(day1)).toBe(75);
     });
 
-    it('should set multiple stats in different date order', () => {
-        setStat(day3, 50);
-        setStat(day5, 100);
-        setStat(day1, 0);
-        setStat(day4, 75);
-        setStat(day2, 25);
+    it('should set multiple stats in different date order', async () => {
+        await setStat(day3, 50);
+        await setStat(day5, 100);
+        await setStat(day1, 0);
+        await setStat(day4, 75);
+        await setStat(day2, 25);
 
         expect(getStat(day1)).toBe(0);
         expect(getStat(day2)).toBe(25);
@@ -38,36 +42,36 @@ describe('HappinessStatsService', () => {
         expect(getStat(day5)).toBe(100);
     });
 
-    it('should update a stat that was previousl set', () => {
-        setStat(day2, 0);
+    it('should update a stat that was previousl set', async () => {
+        await setStat(day2, 0);
         
         // Update the only item in the series.
-        setStat(day2, 25);
+        await setStat(day2, 25);
         expect(getStat(day2)).toBe(25);
 
         // Add the second item to the series.
-        setStat(day1, 0);
+        await setStat(day1, 0);
 
         // Update earliest item in the series.
-        setStat(day1, 50);
+        await setStat(day1, 50);
         expect(getStat(day1)).toBe(50);
 
         // Update the latest item in the series.
-        setStat(day2, 75);
+        await setStat(day2, 75);
         expect(getStat(day2)).toBe(75);
 
         // Add the third item to the series.
-        setStat(day3, 0);
+        await setStat(day3, 0);
 
         // Update the middle item in the series.
-        setStat(day2, 100);
+        await setStat(day2, 100);
         expect(getStat(day2)).toBe(100);
     });
 
-    it('should get daily stats for the specified interval', () => {
-        setStat(day2, 0);
-        setStat(day3, 25);
-        setStat(day4, 50);
+    it('should get daily stats for the specified interval', async () => {
+        await setStat(day2, 0);
+        await setStat(day3, 25);
+        await setStat(day4, 50);
 
         expect(getStatsDaily(day2, day3))
             .toEqual([{ date: day2, value: 0 }]);
@@ -88,32 +92,32 @@ describe('HappinessStatsService', () => {
             .toEqual([{ date: day4, value: 50 }]);
     });
 
-    it('should get weekly averages', () => {
+    it('should get weekly averages', async () => {
 
         // const weekday0 = dayjs(day1).weekday(0);
         const day = (nw, nd) => dayjs(day1).weekday(7 * nw + nd);
         const str = (nw, nd) => day(nw, nd).format('YYYY-MM-DD');
 
         // week 1: average 12
-        setStat(day(1, 0), 10);
-        setStat(day(1, 1), 14);
+        await setStat(day(1, 0), 10);
+        await setStat(day(1, 1), 14);
 
         // week 2: average 23
-        setStat(day(2, 0), 20);
-        setStat(day(2, 4), 26);
+        await setStat(day(2, 0), 20);
+        await setStat(day(2, 4), 26);
 
         // week 3: average 34
-        setStat(day(3, 1), 30);
-        setStat(day(3, 3), 38);
+        await setStat(day(3, 1), 30);
+        await setStat(day(3, 3), 38);
 
         // week 4: average 55
-        setStat(day(4, 2), 40);
-        setStat(day(4, 3), 50);
-        setStat(day(4, 4), 60);
-        setStat(day(4, 6), 70);
+        await setStat(day(4, 2), 40);
+        await setStat(day(4, 3), 50);
+        await setStat(day(4, 4), 60);
+        await setStat(day(4, 6), 70);
 
         // week 5: average 80
-        setStat(day(5, 0), 80);
+        await setStat(day(5, 0), 80);
 
         // week 6: no data
 
@@ -125,6 +129,6 @@ describe('HappinessStatsService', () => {
                 { date: str(3, 0), value: 34 },
                 { date: str(4, 0), value: 55 },
                 { date: str(5, 0), value: 80 },
-            ])
+            ]);
     });
 });
