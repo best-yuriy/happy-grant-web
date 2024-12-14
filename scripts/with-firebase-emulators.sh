@@ -1,2 +1,2 @@
 set -x
-firebase emulators:exec --only auth --import .firebase-emulator-data "$*"
+firebase emulators:exec --only auth,firestore --import .firebase-emulator-data "$*"

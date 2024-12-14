@@ -9,7 +9,7 @@
     "chart.js": "^4.4.4",
     "dayjs": "^1.11.13",
     "deepmerge": "^4.3.1",
-    "firebase": "^11.0.1",
+    "firebase": "^11.1.0",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
@@ -41,5 +41,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "@inrupt/jest-jsdom-polyfills": "^3.2.4",
+    "timers": "^0.1.1",
+    "web-streams-polyfill": "^4.0.0"
   }
 }
