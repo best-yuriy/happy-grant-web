@@ -4,7 +4,7 @@ async function setHappinessLevel(date, value) {
     await setStat(date, value);
 }
 
-function getHappinessLevel(date) {
+async function getHappinessLevel(date) {
     return getStat(date);
 }
 

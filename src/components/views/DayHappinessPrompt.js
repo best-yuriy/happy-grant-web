@@ -8,7 +8,7 @@ import happy from '../../assets/happy.png'
 import thoughtful from '../../assets/thoughtful.png'
 import sad from '../../assets/sad.png'
 import crying from '../../assets/crying.png'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import { setHappinessLevel, getHappinessLevel } from '../../services/HappinessLevelRepo'
 import { Direction, Range, getTrackBackground } from "react-range";
@@ -48,65 +48,82 @@ function SliderComponent({ value, setValue }) {
     );
 }
 
-function moodImageFrom(moodValue) {
-    if (moodValue < 20) return crying;
-    if (moodValue < 40) return sad;
-    if (moodValue < 60) return thoughtful;
-    if (moodValue < 80) return happy;
-    return ecstatic;
-}
-
 function DayHappinessPrompt({ onError }) {
 
     const today = () => dayjs().startOf('day');
 
-    function initState(date) {
-        const existingValue = getHappinessLevel(date);
-        return {
-            date,
-            value: existingValue || 80,
-            savedValue: existingValue,
-            status: existingValue ? 'SAVED' : 'UNSAVED'
+    const [date, setDate] = useState(today);
+    const [value, setValue] = useState(80);
+    const [savedValue, setSavedValue] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        let canceled = false;
+
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const existingValue = await getHappinessLevel(date);
+                if (!canceled) {
+                    setSavedValue(existingValue);
+                    setValue(existingValue || 80);
+                }
+            }
+            catch (error) {
+                onError('There was an error while loading data.');
+                console.log('There was an error while loading data:', error);
+            }
+            finally {
+                if (!canceled) {
+                    setIsLoading(false);
+                }
+            }
         };
-    }
 
-    const [state, setState] = useState(initState(today()));
+        fetchData();
 
-    function changeDays(numDays) {
-        const newDate = state.date.add(numDays, 'day');
+        return () => { canceled = true };
+    }, [date]);
+
+    function tryChangeDays(numDays) {
+        if (isSaving) {
+            return;
+        }
+
+        const newDate = date.add(numDays, 'day');
         if (!today().isBefore(newDate)) {
-            setState(initState(newDate));
+            setDate(newDate);
         }
     }
 
-    function setHappinessLevelState(value) {
-        setState({ ...state, value, status: value == state.savedValue ? 'SAVED' : 'UNSAVED' });
-    }
+    async function trySave() {
+        if (isSaving || isLoading || value === savedValue) {
+            return;
+        }
 
-    async function saveHappinessLevel() {
-        if (state.status === 'UNSAVED') {
-            setState({ ...state, status: 'SAVING' });
-            try {
-                await setHappinessLevel(state.date, state.value);
-                setState({ ...state, savedValue: state.value, status: 'SAVED' });
-            } catch (error) {
-                setState({ ...state, status: 'UNSAVED' });
-                onError('There was a problem saving your happiness stats.');
-                console.log('There was a problem saving your happiness stats:', error);
-            }
-            
-            
+        setIsSaving(true);
+        try {
+            await setHappinessLevel(date, value);
+            setSavedValue(value);
+        }
+        catch (error) {
+            onError('There was a problem saving your happiness stats.');
+            console.log('There was a problem saving your happiness stats:', error);
+        }
+        finally {
+            setIsSaving(false);
         }
     }
 
     function displayIfMoodBetween(min, max) {
-        return { display: state.value >= min && state.value < max ? "block" : "none" };
+        return { display: value >= min && value < max ? "block" : "none" };
     }
 
     return (
         <div id='day-happiness-prompt' className='flex-column'>
             <div className='header flex-column-fixed'>
-                <span>{state.date.format('MMM DD YYYY')}</span>
+                <span>{date.format('MMM DD YYYY')}</span>
             </div>
 
             <div className='flex-column-main'>
@@ -121,20 +138,20 @@ function DayHappinessPrompt({ onError }) {
                     </div>
 
                     <div className='mood-slider flex-column-fixed'>
-                        <SliderComponent value={state.value} setValue={setHappinessLevelState}/>
+                        <SliderComponent value={value} setValue={setValue}/>
                     </div>
 
                     <div className='buttons flex-column-fixed flex-row'>
-                        <div className='button' onClick={() => changeDays(-1)}>
+                        <div className='button' onClick={() => tryChangeDays(-1)}>
                             <img src={chevronBackward} alt='back'/>
                         </div>
                         <div
-                            className={`button primary${state.value === state.savedValue ? ' locked' : ''}`}
-                            onClick={async () => await saveHappinessLevel()}
+                            className={`button primary${value === savedValue ? ' locked' : ''}`}
+                            onClick={trySave}
                         >
-                            <img src={state.status === 'SAVING' ? pendingCircle : checkCircle} alt='save'/>
+                            <img src={isSaving || isLoading ? pendingCircle : checkCircle} alt='save'/>
                         </div>
-                        <div className='button' onClick={() => changeDays(1)}>
+                        <div className='button' onClick={() => tryChangeDays(1)}>
                             <img src={chevronForward} alt='forward'/>
                         </div>
                     </div>
