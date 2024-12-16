@@ -1,4 +1,4 @@
-import './HappinessStats.css'
+import './HappinessStats.css';
 import { Line } from 'react-chartjs-2';
 import {
     Chart,
@@ -7,12 +7,11 @@ import {
     LinearScale,
     PointElement,
     Tooltip
-} from 'chart.js'
+} from 'chart.js';
 import dayjs from 'dayjs';
-import weekday from 'dayjs/plugin/weekday'
-import { setHappinessLevel, getHappinessLevel } from '../../services/HappinessLevelRepo'
-import { useState } from 'react';
-import { getStatsDaily, getStatsWeekly } from '../../services/HappinessStatService';
+import weekday from 'dayjs/plugin/weekday';
+import { useEffect, useState } from 'react';
+import { getDailyLabels, getWeeklyLabels, getDailyStats, getWeeklyStats } from '../../services/HappinessTimeSeriesUtils';
 
 dayjs.extend(weekday);
 
@@ -56,79 +55,7 @@ function chartOptions(labels) {
     };
 }
 
-// start: dayjs - the start date (inclusive)
-// end: dayjs - the end date (exclusive)
-// step: dayjs => dayjs - function to calculate the next date
-// get: dayjs => T - function to calculate the value for the date
-function getRange(start, end, step, get) {
-    const res = [];
-    
-    let date = start;
-    while (date.isBefore(end)) {
-        res.push(get(date));
-        date = step(date)
-    }
-
-    return res;
-}
-
-function getDailyStats(start, end) {
-    const stats = getStatsDaily(start, end);
-    const res = [];
-
-    function addEmpties(from, to) {
-        while (from.isBefore(to)) {
-            res.push({ date: from, value: null });
-            from = from.add(1, 'day');
-        }
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        const nextDate = dayjs(stats[i].date);
-        addEmpties(start, nextDate);
-        res.push({ date: nextDate, value: stats[i].value });
-        start = nextDate.add(1, 'day');
-    }
-
-    addEmpties(start, end)
-
-    return res;
-}
-
-function getDailyLabels(start, end) {
-    return getRange(start, end, d => d.add(1, 'day'), x => x);
-}
-
-function getWeeklyStats(start, end) {
-    const stats = getStatsWeekly(start, end);
-    const res = [];
-
-    function addEmpties(from, to) {
-        while (from.isBefore(to)) {
-            res.push({ date: from, value: null });
-            from = from.add(7, 'day');
-        }
-    }
-
-    for (let i = 0; i < stats.length; i++) {
-        const nextDate = dayjs(stats[i].date);
-        addEmpties(start, nextDate);
-        res.push({ date: nextDate, value: stats[i].value });
-        start = nextDate.add(7, 'day');
-    }
-
-    addEmpties(start, end)
-
-    return res;
-}
-
-function getWeeklyLabels(start, end) {
-    return getRange(start, end, d => d.add(7, 'day'), x => x);
-}
-
-function HappinessStats() {
-    const [state, setState] = useState({ mode: '7d' });
-
+async function getChartData(mode) {
     const today = dayjs().startOf('day');
     const tomorrow = today.add(1, 'day');
 
@@ -136,25 +63,25 @@ function HappinessStats() {
     let stats;
     let dates;
 
-    switch(state.mode) {
+    switch(mode) {
         case '7d':
             start = today.subtract(6, 'day');
-            stats = getDailyStats(start, tomorrow);
+            stats = await getDailyStats(start, tomorrow);
             dates = getDailyLabels(start, tomorrow);
             break;
         case '6w':
             start = today.weekday(0).subtract(7 * 6, 'day');
-            stats = getWeeklyStats(start, tomorrow);
+            stats = await getWeeklyStats(start, tomorrow);
             dates = getWeeklyLabels(start, tomorrow);
             break;
         default:
-            throw new Error(`Invalid mode: ${state.mode}.`);        
+            throw new Error(`Invalid mode: ${mode}.`);        
     }
 
     const labels = dates.map(d => d.format('YYYY-MM-DD'));
     const happinessData = stats.map(e => e.value);
 
-    const chartData = {
+    return {
         labels: labels,
         datasets: [
             {
@@ -163,16 +90,37 @@ function HappinessStats() {
             }
         ]
     };
+}
+
+function HappinessStats() {
+
+    const [mode, setMode] = useState('7d');
+    const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const fetchData = async () => {
+            const newChartData = await getChartData(mode);
+            if (!cancelled) {
+                setChartData(newChartData);
+            }
+        };
+
+        fetchData();
+
+        return () => { cancelled = true };
+    }, [mode]);
 
     return (
         <div id='happiness-stats'>
             <div className='stats-mode-selector'>
-                <button className='stats-mode-choice' onClick={() => setState({ mode: '7d' })}>7d</button>
-                <button className='stats-mode-choice' onClick={() => setState({ mode: '6w' })}>6w</button>
+                <button className='stats-mode-choice' onClick={() => setMode('7d')}>7d</button>
+                <button className='stats-mode-choice' onClick={() => setMode('6w')}>6w</button>
             </div>
             <Line
                 data={chartData}
-                options={chartOptions(labels)}
+                options={chartOptions(chartData.labels)}
             />
         </div>
     );
